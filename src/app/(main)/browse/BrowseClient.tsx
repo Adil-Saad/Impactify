@@ -49,7 +49,7 @@ export default function BrowseClient({ quests }: { quests: QuestRow[] }) {
   }));
 
   return (
-    <div className="flex flex-col items-center justify-start p-4 h-full relative overflow-hidden">
+    <div className="flex flex-col items-center justify-start p-4 h-full relative">
       <div className="w-full max-w-sm mb-4">
         <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
           Discover
@@ -57,7 +57,7 @@ export default function BrowseClient({ quests }: { quests: QuestRow[] }) {
         <p className="text-[#34D1BF] font-medium text-sm mt-1">Acts of kindness near you</p>
 
         {/* Category Filter */}
-        <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 pr-8">
           <Filter size={14} className="text-gray-500 shrink-0" />
           {CATEGORY_FILTERS.map((cat) => (
             <button
