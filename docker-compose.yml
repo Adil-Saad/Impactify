@@ -1,12 +1,24 @@
-version: '3.8'
 services:
   web:
     build:
       context: .
       dockerfile: dockerfile
+      args:
+        # Browser uses the proxy rewrite through Next.js itself
+        NEXT_PUBLIC_SUPABASE_URL: "http://localhost:3000/supabase"
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
     ports:
       - "3000:3000"
     environment:
-      # Use localhost or host.docker.internal depending on OS to reach Supabase
-      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      # Server-side reaches Supabase Kong directly on the Docker network
+      SUPABASE_URL: "http://supabase_kong_gokind:8000"
+      NEXT_PUBLIC_SUPABASE_URL: "http://localhost:3000/supabase"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
+      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
+    networks:
+      - supabase_network_gokind
+    restart: unless-stopped
+
+networks:
+  supabase_network_gokind:
+    external: true
