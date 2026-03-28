@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Deed Marketplace — Portsmouth</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #F2A900;
+  --gold-soft: #FFF3D6;
+  --navy: #0B1D3A;
+  --navy-mid: #132B52;
+  --navy-light: #1A3A6E;
+  --sea: #2EC4B6;
+  --sea-glow: rgba(46, 196, 182, 0.25);
+  --coral: #FF6B6B;
+  --white: #FAFBFC;
+  --text: #E8ECF1;
+  --text-muted: #8B9BB4;
+  --card-bg: rgba(19, 43, 82, 0.6);
+  --glass: rgba(255,255,255,0.06);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-glow {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 30%, rgba(46,196,182,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 80% 70%, rgba(242,169,0,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 800px 600px at 50% 50%, rgba(19,43,82,0.5) 0%, transparent 100%);
+}
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  backdrop-filter: blur(20px);
+  background: rgba(11,29,58,0.85);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 0 32px;
+}
+.header-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 72px;
+}
+.logo {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; color: var(--white);
+}
+.logo-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--sea), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.logo span { color: var(--gold); }
+.nav { display: flex; gap: 6px; }
+.nav-btn {
+  padding: 10px 18px; border-radius: 100px; border: none;
+  background: transparent; color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.25s;
+}
+.nav-btn:hover { color: var(--white); background: var(--glass); }
+.nav-btn.active {
+  background: linear-gradient(135deg, var(--sea), rgba(46,196,182,0.7));
+  color: var(--white); font-weight: 600;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 80px 24px 48px;
+  max-width: 800px; margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, rgba(242,169,0,0.15), rgba(242,169,0,0.05));
+  border: 1px solid rgba(242,169,0,0.25);
+  border-radius: 100px; padding: 8px 20px;
+  font-size: 13px; font-weight: 600; color: var(--gold);
+  margin-bottom: 28px; letter-spacing: 0.5px;
+}
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px, 6vw, 56px);
+  line-height: 1.1; color: var(--white);
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--sea), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero p {
+  font-size: 18px; line-height: 1.7; color: var(--text-muted);
+  max-width: 600px; margin: 0 auto 36px;
+}
+.hero-stats {
+  display: flex; justify-content: center; gap: 48px;
+  padding-top: 36px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.hero-stat h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px; color: var(--sea);
+}
+.hero-stat p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── MAIN LAYOUT ── */
+.main {
+  position: relative; z-index: 1;
+  max-width: 1400px; margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ── SECTION TITLES ── */
+.section-title {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px; color: var(--white);
+}
+.section-title .count {
+  background: var(--glass); border-radius: 100px;
+  padding: 4px 12px; font-size: 12px; color: var(--text-muted);
+}
+
+/* ── CARDS ── */
+.panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+/* ── MISSION CARDS ── */
+.mission-card {
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.mission-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; border-radius: 0 3px 3px 0;
+  transition: all 0.3s;
+}
+.mission-card.litter::before { background: var(--sea); }
+.mission-card.social::before { background: var(--gold); }
+.mission-card.community::before { background: var(--coral); }
+.mission-card:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+.mission-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.mission-tag {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 3px 8px; border-radius: 4px;
+}
+.mission-tag.litter { background: rgba(46,196,182,0.15); color: var(--sea); }
+.mission-tag.social { background: rgba(242,169,0,0.15); color: var(--gold); }
+.mission-tag.community { background: rgba(255,107,107,0.15); color: var(--coral); }
+.mission-title {
+  font-weight: 600; font-size: 15px; color: var(--white); margin-bottom: 6px;
+}
+.mission-meta {
+  font-size: 12px; color: var(--text-muted);
+  display: flex; gap: 12px; align-items: center;
+  margin-bottom: 12px;
+}
+.mission-actions { display: flex; gap: 8px; }
+.btn-accept {
+  flex: 1; padding: 10px; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, var(--sea), rgba(46,196,182,0.7));
+  color: var(--white); font-weight: 600; font-size: 13px;
+  cursor: pointer; transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-accept:hover { filter: brightness(1.15); transform: scale(1.02); }
+.btn-details {
+  padding: 10px 16px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent; color: var(--text-muted);
+  font-size: 13px; cursor: pointer; transition: all 0.25s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-details:hover { border-color: var(--sea); color: var(--sea); }
+.points-badge {
+  background: rgba(242,169,0,0.12); color: var(--gold);
+  font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+}
+
+/* ── MAP ── */
+.map-container {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  min-height: 600px;
+}
+.map-area {
+  position: relative;
+  width: 100%; height: 500px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--navy);
+}
+.map-svg { width: 100%; height: 100%; }
+
+/* Map pins */
+.map-pin {
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.map-pin:hover { transform: scale(1.3); }
+.pin-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; r: 12; }
+  50% { opacity: 0.7; r: 18; }
+}
+.pin-new {
+  animation: pinDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes pinDrop {
+  0% { transform: translateY(-40px) scale(0); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Map legend */
+.map-legend {
+  display: flex; gap: 16px; margin-top: 16px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-muted);
+}
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+}
+
+/* ── LIVE TICKER ── */
+.ticker {
+  margin-top: 16px; padding: 12px 16px;
+  background: rgba(46,196,182,0.06);
+  border: 1px solid rgba(46,196,182,0.15);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; gap: 10px;
+}
+.ticker-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--sea);
+  animation: blink 1.5s infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.ticker p { font-size: 13px; color: var(--sea); }
+
+/* ── RIGHT PANEL ── */
+/* Request form */
+.request-form { margin-bottom: 24px; }
+.form-group { margin-bottom: 12px; }
+.form-group label {
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  display: block; margin-bottom: 6px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 12px 14px;
+  background: var(--glass); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm); color: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  transition: border-color 0.25s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: var(--sea);
+}
+.form-select { appearance: none; cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 70px; }
+.form-select option { background: var(--navy); }
+.btn-submit {
+  width: 100%; padding: 14px; border-radius: var(--radius-sm); border: none;
+  background: linear-gradient(135deg, var(--gold), #E09600);
+  color: var(--navy); font-weight: 700; font-size: 15px;
+  cursor: pointer; transition: all 0.3s;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.3px;
+}
+.btn-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* ── LEADERBOARD ── */
+.leaderboard-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px; border-radius: var(--radius-sm);
+  transition: background 0.2s;
+  margin-bottom: 4px;
+}
+.leaderboard-item:hover { background: var(--glass); }
+.lb-rank {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px;
+}
+.lb-rank.gold { background: rgba(242,169,0,0.2); color: var(--gold); }
+.lb-rank.silver { background: rgba(192,192,192,0.15); color: #C0C0C0; }
+.lb-rank.bronze { background: rgba(205,127,50,0.15); color: #CD7F32; }
+.lb-rank.normal { background: var(--glass); color: var(--text-muted); }
+.lb-avatar {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.lb-info { flex: 1; }
+.lb-name { font-weight: 600; font-size: 14px; color: var(--white); }
+.lb-deeds { font-size: 12px; color: var(--text-muted); }
+.lb-points {
+  font-weight: 700; font-size: 14px; color: var(--gold);
+}
+
+/* ── DRAW SECTION ── */
+.draw-card {
+  background: linear-gradient(135deg, rgba(242,169,0,0.12), rgba(46,196,182,0.08));
+  border: 1px solid rgba(242,169,0,0.2);
+  border-radius: var(--radius-sm);
+  padding: 16px; margin-top: 16px;
+  text-align: center;
+}
+.draw-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px; color: var(--gold); margin-bottom: 6px;
+}
+.draw-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.draw-prize {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(242,169,0,0.15); border-radius: 8px;
+  padding: 8px 16px; margin-top: 10px;
+  font-weight: 700; color: var(--gold); font-size: 15px;
+}
+
+/* ── TOAST NOTIFICATION ── */
+.toast {
+  position: fixed; bottom: 32px; right: 32px; z-index: 200;
+  background: var(--navy-mid);
+  border: 1px solid rgba(46,196,182,0.3);
+  border-radius: var(--radius); padding: 16px 24px;
+  display: flex; align-items: center; gap: 12px;
+  transform: translateY(120%); opacity: 0;
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(46,196,182,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.toast-text h4 { font-size: 14px; font-weight: 600; color: var(--white); }
+.toast-text p { font-size: 12px; color: var(--text-muted); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  display: none; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--navy-mid);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  padding: 32px; max-width: 480px; width: 100%;
+  animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes modalIn {
+  0% { transform: scale(0.9) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.modal h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px; color: var(--white); margin-bottom: 8px;
+}
+.modal p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+.modal .mission-reward {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--glass); border-radius: var(--radius-sm);
+  padding: 14px; margin-bottom: 20px;
+}
+.modal .btn-accept { width: 100%; padding: 14px; font-size: 15px; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none; color: var(--text-muted);
+  font-size: 20px; cursor: pointer;
+}
+
+/* ── ANIMATIONS ── */
+.fade-in {
+  animation: fadeIn 0.6s ease forwards;
+}
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.stagger-1 { animation-delay: 0.1s; opacity: 0; }
+.stagger-2 { animation-delay: 0.2s; opacity: 0; }
+.stagger-3 { animation-delay: 0.3s; opacity: 0; }
+.stagger-4 { animation-delay: 0.4s; opacity: 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .header { padding: 0 16px; }
+  .hero { padding: 48px 16px 32px; }
+  .hero-stats { gap: 24px; }
+  .hero-stats h3 { font-size: 28px; }
+  .nav { display: none; }
+  .main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🤝</div>
+      Good Deed <span>Marketplace</span>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="showTab('missions')">Missions</button>
+      <button class="nav-btn" onclick="showTab('map')">Live Map</button>
+      <button class="nav-btn" onclick="showTab('leaderboard')">Leaderboard</button>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero fade-in">
+  <div class="hero-badge">🎂 Portsmouth Centenary · 100 Years as a City</div>
+  <h1>Cities measure traffic and crime.<br>We measure <em>kindness</em>.</h1>
+  <p>A community-powered platform that turns small acts of goodness into visible, measurable impact across Portsmouth. Request help, accept missions, earn rewards.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <h3 id="stat-deeds">247</h3>
+      <p>Good Deeds Done</p>
+    </div>
+    <div class="hero-stat">
+      <h3 id="stat-people">89</h3>
+      <p>Active Citizens</p>
+    </div>
+    <div class="hero-stat">
+      <h3 id="stat-areas">12</h3>
+      <p>Neighbourhoods Lit</p>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="grid">
+
+    <!-- LEFT: MISSIONS -->
+    <div class="fade-in stagger-1">
+      <div class="section-title">
+        <h2>📋 Active Missions</h2>
+        <span class="count" id="mission-count">6 open</span>
+      </div>
+      <div id="mission-list"></div>
+    </div>
+
+    <!-- CENTER: MAP -->
+    <div class="fade-in stagger-2">
+      <div class="map-container">
+        <div class="section-title">
+          <h2>🗺️ Kindness Pulse — Live Map</h2>
+          <span class="count"><span class="ticker-dot" style="display:inline-block;width:6px;height:6px;margin-right:4px;vertical-align:middle;"></span> Live</span>
+        </div>
+        <div class="map-area">
+          <svg class="map-svg" viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg">
+            <!-- Water background -->
+            <rect width="700" height="500" fill="#081629"/>
+            <!-- Simplified Portsmouth landmass -->
+            <path d="M100,100 L350,60 L580,80 L620,150 L600,280 L580,350 
+                     L520,400 L430,440 L350,450 L250,430 L180,380 
+                     L120,300 L90,200 Z" 
+                  fill="#0F2847" stroke="#1A3A6E" stroke-width="1.5"/>
+            <!-- Portsea Island -->
+            <path d="M300,120 L450,110 L500,160 L490,260 L460,310 
+                     L400,340 L340,330 L300,280 L280,200 Z" 
+                  fill="#132B52" stroke="#1A3A6E" stroke-width="1"/>
+            <!-- Road network hints -->
+            <line x1="200" y1="180" x2="500" y2="170" stroke="#1A3A6E" stroke-width="0.8" opacity="0.5"/>
+            <line x1="380" y1="110" x2="400" y2="340" stroke="#1A3A6E" stroke-width="0.8" opacity="0.5"/>
+            <line x1="300" y1="200" x2="490" y2="240" stroke="#1A3A6E" stroke-width="0.6" opacity="0.4"/>
+            
+            <!-- Area labels -->
+            <text x="350" y="155" fill="#2A5090" font-size="10" font-family="DM Sans" text-anchor="middle" opacity="0.6">PORTSEA</text>
+            <text x="420" y="220" fill="#2A5090" font-size="9" font-family="DM Sans" text-anchor="middle" opacity="0.5">SOUTHSEA</text>
+            <text x="200" y="220" fill="#2A5090" font-size="9" font-family="DM Sans" text-anchor="middle" opacity="0.5">COSHAM</text>
+            <text x="500" y="300" fill="#2A5090" font-size="9" font-family="DM Sans" text-anchor="middle" opacity="0.5">EASTNEY</text>
+            <text x="300" y="310" fill="#2A5090" font-size="9" font-family="DM Sans" text-anchor="middle" opacity="0.5">FRATTON</text>
+            <text x="450" y="150" fill="#2A5090" font-size="9" font-family="DM Sans" text-anchor="middle" opacity="0.5">OLD PORTSMOUTH</text>
+            <text x="180" y="350" fill="#2A5090" font-size="9" font-family="DM Sans" text-anchor="middle" opacity="0.5">HILSEA</text>
+            
+            <!-- Completed deed pins (glowing) -->
+            <g id="map-pins"></g>
+          </svg>
+        </div>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--sea)"></div> Litter Pick</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> Social Check-in</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div> Community Support</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3)"></div> Pending</div>
+        </div>
+        <div class="ticker">
+          <div class="ticker-dot"></div>
+          <p id="ticker-text">Margaret just completed "Check on Mrs Davies" in Southsea — +25 pts 🌟</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: REQUEST + LEADERBOARD -->
+    <div class="fade-in stagger-3">
+      <!-- Request Help -->
+      <div class="panel request-form">
+        <div class="section-title">
+          <h2>🆘 Request Help</h2>
+        </div>
+        <div class="form-group">
+          <label>What do you need?</label>
+          <input class="form-input" type="text" placeholder="e.g. Litter outside the school gates" id="req-title">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select class="form-select" id="req-category">
+            <option value="litter">🧹 Litter Pick</option>
+            <option value="social">☕ Social Check-in</option>
+            <option value="community">🏘️ Community Support</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Neighbourhood</label>
+          <select class="form-select" id="req-area">
+            <option>Southsea</option>
+            <option>Old Portsmouth</option>
+            <option>Fratton</option>
+            <option>Cosham</option>
+            <option>Hilsea</option>
+            <option>Eastney</option>
+            <option>Portsea</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Details</label>
+          <textarea class="form-textarea" placeholder="Any extra info that would help..." id="req-details"></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitRequest()">Post Request →</button>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="panel">
+        <div class="section-title">
+          <h2>🏆 Top Do-Gooders</h2>
+          <span class="count">This week</span>
+        </div>
+        <div id="leaderboard"></div>
+        
+        <!-- Draw -->
+        <div class="draw-card">
+          <h3>🎟️ Weekly Voucher Draw</h3>
+          <p>Every completed deed = 1 entry. This week's prize from a local Portsmouth business:</p>
+          <div class="draw-prize">🎁 £25 Gunwharf Quays Voucher</div>
+          <p style="margin-top:8px;font-size:11px;">Draw: Friday 6pm · 142 entries so far</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">✅</div>
+  <div class="toast-text">
+    <h4 id="toast-title">Mission Accepted!</h4>
+    <p id="toast-desc">You're making Portsmouth better</p>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+// ── DATA ──
+const missions = [
+  { id: 1, title: "Litter pick along Albert Road", category: "litter", area: "Southsea", time: "~30 mins", points: 30, desc: "There's been a buildup of rubbish along Albert Road near the cafés. Bring a bag and gloves — every bit helps." },
+  { id: 2, title: "Check in on Mrs Davies", category: "social", area: "Fratton", time: "~20 mins", points: 25, desc: "Mrs Davies is 84 and lives alone. She'd love a cuppa and a chat. Ring the bell and say you're from Good Deed Marketplace." },
+  { id: 3, title: "Help repaint community noticeboard", category: "community", area: "Cosham", time: "~1 hour", points: 50, desc: "The noticeboard outside the library is peeling. Paint and brushes supplied — just turn up!" },
+  { id: 4, title: "Coffee morning with Jim (veteran)", category: "social", area: "Old Portsmouth", time: "~30 mins", points: 25, desc: "Jim is a 79-year-old Navy veteran. Pop by for a coffee and hear his stories. He's at 14 Broad Street." },
+  { id: 5, title: "Clear fly-tipping on Goldsmith Avenue", category: "litter", area: "Fratton", time: "~45 mins", points: 40, desc: "Someone's dumped bags near the railway bridge. Council has been notified but community help to clear it would be brilliant." },
+  { id: 6, title: "Water planters at community garden", category: "community", area: "Eastney", time: "~15 mins", points: 15, desc: "The raised beds need watering — watering can is behind the shed. Quick and easy!" }
+];
+
+const leaderboardData = [
+  { name: "Sarah M.", deeds: 23, points: 580, avatar: "👩‍🦰", bg: "#2EC4B6" },
+  { name: "Raj P.", deeds: 19, points: 470, avatar: "👨", bg: "#F2A900" },
+  { name: "Donna K.", deeds: 17, points: 425, avatar: "👩", bg: "#FF6B6B" },
+  { name: "Tom W.", deeds: 14, points: 350, avatar: "👨‍🦱", bg: "#7C5CFC" },
+  { name: "Aisha H.", deeds: 12, points: 310, avatar: "🧕", bg: "#2EC4B6" }
+];
+
+const pinPositions = [
+  { x: 420, y: 210, color: "#2EC4B6", label: "Litter pick" },
+  { x: 340, y: 285, color: "#F2A900", label: "Check-in" },
+  { x: 200, y: 210, color: "#FF6B6B", label: "Noticeboard" },
+  { x: 445, y: 145, color: "#F2A900", label: "Coffee morning" },
+  { x: 360, y: 300, color: "#2EC4B6", label: "Fly-tipping" },
+  { x: 490, y: 265, color: "#FF6B6B", label: "Garden" },
+  { x: 380, y: 195, color: "#2EC4B6", label: "Beach clean" },
+  { x: 310, y: 250, color: "#F2A900", label: "Visit" },
+  { x: 460, y: 180, color: "#FF6B6B", label: "Mural" },
+  { x: 220, y: 260, color: "#2EC4B6", label: "Park tidy" },
+  { x: 400, y: 310, color: "#F2A900", label: "Check-in" },
+  { x: 350, y: 170, color: "#FF6B6B", label: "Bench repair" },
+];
+
+const tickerMessages = [
+  "Margaret completed \"Check on Mrs Davies\" in Southsea — +25 pts 🌟",
+  "Raj picked up litter on Albert Road — +30 pts ♻️",
+  "Sarah helped repaint the noticeboard in Cosham — +50 pts 🎨",
+  "New request: Coffee companion needed in Old Portsmouth ☕",
+  "Tom watered the Eastney community garden — +15 pts 🌱",
+  "Aisha cleared fly-tipping in Fratton — +40 pts 💪",
+  "142 entries in this week's voucher draw! 🎟️",
+  "3 new missions just posted in Southsea 📋"
+];
+
+// ── RENDER MISSIONS ──
+function renderMissions() {
+  const list = document.getElementById('mission-list');
+  list.innerHTML = missions.map(m => `
+    <div class="mission-card ${m.category}" onclick="openModal(${m.id})">
+      <div class="mission-header">
+        <span class="mission-tag ${m.category}">${m.category === 'litter' ? '🧹 Litter' : m.category === 'social' ? '☕ Social' : '🏘️ Community'}</span>
+        <span class="points-badge">+${m.points} pts</span>
+      </div>
+      <div class="mission-title">${m.title}</div>
+      <div class="mission-meta">
+        <span>📍 ${m.area}</span>
+        <span>⏱ ${m.time}</span>
+      </div>
+      <div class="mission-actions">
+        <button class="btn-accept" onclick="event.stopPropagation();acceptMission(${m.id})">Accept Mission</button>
+        <button class="btn-details" onclick="event.stopPropagation();openModal(${m.id})">Info</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER LEADERBOARD ──
+function renderLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = leaderboardData.map((p, i) => {
+    const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'normal';
+    return `
+      <div class="leaderboard-item">
+        <div class="lb-rank ${rankClass}">${i + 1}</div>
+        <div class="lb-avatar" style="background:${p.bg}22">${p.avatar}</div>
+        <div class="lb-info">
+          <div class="lb-name">${p.name}</div>
+          <div class="lb-deeds">${p.deeds} deeds completed</div>
+        </div>
+        <div class="lb-points">${p.points}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── RENDER MAP PINS ──
+function renderPins() {
+  const pinsG = document.getElementById('map-pins');
+  pinPositions.forEach((pin, i) => {
+    setTimeout(() => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.classList.add('map-pin', 'pin-new');
+      g.innerHTML = `
+        <circle class="pin-glow" cx="${pin.x}" cy="${pin.y}" r="14" fill="${pin.color}" opacity="0.2" style="animation-delay:${i*0.3}s"/>
+        <circle cx="${pin.x}" cy="${pin.y}" r="6" fill="${pin.color}" stroke="#0B1D3A" stroke-width="2"/>
+      `;
+      pinsG.appendChild(g);
+    }, 800 + i * 200);
+  });
+}
+
+// ── MODAL ──
+function openModal(id) {
+  const m = missions.find(x => x.id === id);
+  if (!m) return;
+  const cat = m.category === 'litter' ? '🧹 Litter Pick' : m.category === 'social' ? '☕ Social Check-in' : '🏘️ Community Support';
+  document.getElementById('modal-content').innerHTML = `
+    <h2>${m.title}</h2>
+    <p>${m.desc}</p>
+    <div class="mission-reward">
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text-muted)">Category</div>
+        <div style="font-weight:600;color:var(--white);margin-top:2px">${cat}</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:12px;color:var(--text-muted)">Area</div>
+        <div style="font-weight:600;color:var(--white);margin-top:2px">📍 ${m.area}</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text-muted)">Reward</div>
+        <div style="font-weight:700;color:var(--gold);margin-top:2px">+${m.points} pts + 🎟️</div>
+      </div>
+    </div>
+    <button class="btn-accept" onclick="acceptMission(${m.id});closeModal()">Accept This Mission →</button>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+// ── ACCEPT MISSION ──
+function acceptMission(id) {
+  const m = missions.find(x => x.id === id);
+  showToast('✅', 'Mission Accepted!', `"${m.title}" — Good luck! +${m.points} pts on completion`);
+  
+  // Add a new pin
+  const pinsG = document.getElementById('map-pins');
+  const colors = { litter: '#2EC4B6', social: '#F2A900', community: '#FF6B6B' };
+  const px = 250 + Math.random() * 200;
+  const py = 150 + Math.random() * 150;
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.classList.add('map-pin', 'pin-new');
+  g.innerHTML = `
+    <circle class="pin-glow" cx="${px}" cy="${py}" r="14" fill="${colors[m.category]}" opacity="0.3"/>
+    <circle cx="${px}" cy="${py}" r="6" fill="${colors[m.category]}" stroke="#0B1D3A" stroke-width="2"/>
+  `;
+  pinsG.appendChild(g);
+
+  // Increment stats
+  const deeds = document.getElementById('stat-deeds');
+  deeds.textContent = parseInt(deeds.textContent) + 1;
+}
+
+// ── SUBMIT REQUEST ──
+function submitRequest() {
+  const title = document.getElementById('req-title').value;
+  if (!title.trim()) {
+    showToast('⚠️', 'Please add a title', 'What do you need help with?');
+    return;
+  }
+  const category = document.getElementById('req-category').value;
+  const area = document.getElementById('req-area').value;
+  
+  missions.unshift({
+    id: Date.now(),
+    title: title,
+    category: category,
+    area: area,
+    time: "~30 mins",
+    points: 20,
+    desc: document.getElementById('req-details').value || "A neighbour needs your help!"
+  });
+  
+  renderMissions();
+  document.getElementById('mission-count').textContent = missions.length + ' open';
+  document.getElementById('req-title').value = '';
+  document.getElementById('req-details').value = '';
+  
+  showToast('📋', 'Request Posted!', `Your request is now live in ${area}. Someone will pick it up soon!`);
+}
+
+// ── TOAST ──
+function showToast(icon, title, desc) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-desc').textContent = desc;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+}
+
+// ── TICKER ──
+let tickerIndex = 0;
+function rotateTicker() {
+  tickerIndex = (tickerIndex + 1) % tickerMessages.length;
+  const el = document.getElementById('ticker-text');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.textContent = tickerMessages[tickerIndex];
+    el.style.opacity = 1;
+  }, 300);
+}
+setInterval(rotateTicker, 4000);
+
+// ── LIVE STAT COUNTER ──
+function incrementStats() {
+  const deeds = document.getElementById('stat-deeds');
+  const people = document.getElementById('stat-people');
+  if (Math.random() > 0.6) {
+    deeds.textContent = parseInt(deeds.textContent) + 1;
+  }
+  if (Math.random() > 0.85) {
+    people.textContent = parseInt(people.textContent) + 1;
+  }
+}
+setInterval(incrementStats, 8000);
+
+// ── TAB SWITCHING ──
+function showTab(tab) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ── INIT ──
+renderMissions();
+renderLeaderboard();
+renderPins();
+</script>
+</body>
+</html>
