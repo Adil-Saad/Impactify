@@ -12,18 +12,20 @@ const CATEGORY_EMOJI: Record<string, string> = {
 };
 
 function createMarkerIcon(status: string) {
-  const color = status === 'completed' ? '#34D1BF' : '#8B5CF6';
-  const pulse = status === 'completed' ?
-    `<div style="width:20px;height:20px;background:${color};border-radius:50%;position:absolute;animation:mapPulse 1.5s infinite;"></div>` : '';
+  const isOpen = status === 'open';
+  const color = isOpen ? '#8B5CF6' : '#34D1BF';
+  const glow = isOpen ? '#8B5CF680' : '#34D1BF80';
 
   return L.divIcon({
     className: '',
-    html: `<div style="position:relative;width:20px;height:20px;">
-      <div style="width:16px;height:16px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 0 10px ${color}80;position:absolute;top:2px;left:2px;z-index:2;"></div>
-      ${pulse}
-    </div>`,
-    iconSize: [20, 20],
-    iconAnchor: [10, 10],
+    html: `
+      <div class="gk-marker" style="--c:${color};--g:${glow};">
+        <div class="gk-ring gk-ring1"></div>
+        <div class="gk-ring gk-ring2"></div>
+        <div class="gk-core"></div>
+      </div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
   });
 }
 
@@ -43,10 +45,38 @@ export default function KindnessPulseMap() {
   const supabase = createClient();
 
   useEffect(() => {
-    const style = document.createElement('style');
-    style.innerHTML = `@keyframes mapPulse { 0% { transform:scale(1); opacity:0.8; } 100% { transform:scale(3); opacity:0; } }`;
-    document.head.appendChild(style);
-    return () => { document.head.removeChild(style); };
+    const styleId = 'gk-map-styles';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.innerHTML = `
+        .gk-marker { position:relative; width:30px; height:30px; }
+        .gk-core {
+          position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+          width:14px; height:14px; border-radius:50%;
+          background:var(--c); border:2px solid white;
+          box-shadow:0 0 12px 4px var(--g), 0 0 4px 1px var(--c);
+          z-index:3;
+        }
+        .gk-ring {
+          position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0);
+          border-radius:50%; border:2px solid var(--c);
+          animation: gkPulse 2s ease-out infinite;
+          z-index:1;
+        }
+        .gk-ring1 { width:30px; height:30px; animation-delay:0s; }
+        .gk-ring2 { width:30px; height:30px; animation-delay:0.8s; }
+        @keyframes gkPulse {
+          0%   { transform:translate(-50%,-50%) scale(0.4); opacity:0.9; }
+          100% { transform:translate(-50%,-50%) scale(2.2); opacity:0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) document.head.removeChild(el);
+    };
   }, []);
 
   useEffect(() => {

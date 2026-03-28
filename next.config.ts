@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: ['localhost:43000', 'localhost:3000', 'gokind.flatsync.app', '*.flatsync.app'],
+      bodySizeLimit: '10mb',
     },
   },
   images: {
