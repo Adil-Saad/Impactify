@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { createClient } from '@/utils/supabase/client';
@@ -58,8 +58,23 @@ interface QuestPin {
   price: number;
 }
 
+// Inner component: zooms map to new quest on realtime insert
+function MapAutoZoom({ target }: { target: [number, number] | null }) {
+  const map = useMap();
+  const prevTarget = useRef<string | null>(null);
+  useEffect(() => {
+    if (!target) return;
+    const key = target.join(',');
+    if (key === prevTarget.current) return;
+    prevTarget.current = key;
+    map.flyTo(target, 15, { animate: true, duration: 1.8 });
+  }, [target, map]);
+  return null;
+}
+
 export default function KindnessPulseMap() {
   const [quests, setQuests] = useState<QuestPin[]>([]);
+  const [flyTarget, setFlyTarget] = useState<[number, number] | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -127,9 +142,14 @@ export default function KindnessPulseMap() {
     // Realtime subscription
     const channel = supabase
       .channel('map-quests')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'quests' }, (payload) => {
-        console.log('Realtime Map Update:', payload);
-        fetchQuests(); // Refetch on any change
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'quests' }, (payload) => {
+        const q = payload.new as QuestPin;
+        setQuests(prev => [q, ...prev]);
+        // Fly to the new quest
+        setFlyTarget([q.lat, q.lng]);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'quests' }, () => {
+        fetchQuests();
       })
       .subscribe();
 
@@ -144,6 +164,7 @@ export default function KindnessPulseMap() {
         style={{ height: '100%', width: '100%', background: '#0A1628' }}
         zoomControl={false}
       >
+        <MapAutoZoom target={flyTarget} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
