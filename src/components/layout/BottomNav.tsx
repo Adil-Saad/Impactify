@@ -2,21 +2,22 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Map, Layers, PlusCircle, User } from 'lucide-react';
+import { Home, Map, Layers, PlusCircle, User } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
+    { name: 'Home', href: '/home', icon: Home },
     { name: 'Browse', href: '/browse', icon: Layers },
-    { name: 'Map', href: '/map', icon: Map },
     { name: 'Post', href: '/post', icon: PlusCircle },
+    { name: 'Map', href: '/map', icon: Map },
     { name: 'Profile', href: '/profile', icon: User },
   ];
 
   return (
-    <nav className="fixed bottom-0 w-full bg-[#0A1628]/90 backdrop-blur-md border-t border-gray-800 pb-safe z-50">
-      <div className="flex justify-around items-center h-16 px-4">
+    <nav className="fixed bottom-0 w-full bg-[#0A1628]/95 backdrop-blur-md border-t border-gray-800 pb-safe z-50">
+      <div className="flex justify-around items-center h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -28,7 +29,7 @@ export default function BottomNav() {
                 isActive ? 'text-[#34D1BF]' : 'text-gray-400 hover:text-gray-200'
               }`}
             >
-              <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               <span className="text-[10px] font-medium">{item.name}</span>
             </Link>
           );

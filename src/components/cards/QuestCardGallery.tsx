@@ -11,7 +11,28 @@ export interface Quest {
   distance: string;
   time: string;
   reward: string;
+  category?: string;
+  photoUrl?: string | null;
 }
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  shopping: '🛒',
+  delivery: '📦',
+  litter: '🗑️',
+  charity: '💛',
+  pothole: '🕳️',
+  elderly: '👴',
+  pet: '🐕',
+  other: '✨',
+};
+
+const CARD_IMAGES = [
+  'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400&h=300&fit=crop',
+  'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=400&h=300&fit=crop',
+];
 
 interface QuestCardGalleryProps {
   initialQuests: Quest[];
@@ -21,18 +42,21 @@ function SwipeCard({
   quest,
   onSwipe,
   isTop,
+  index,
 }: {
   quest: Quest;
   onSwipe: (dir: 'left' | 'right') => void;
   isTop: boolean;
+  index: number;
 }) {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-25, 25]);
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0.5, 1, 1, 1, 0.5]);
-
-  // Overlay indicators
   const acceptOpacity = useTransform(x, [0, 80], [0, 1]);
   const rejectOpacity = useTransform(x, [-80, 0], [1, 0]);
+
+  const imageUrl = quest.photoUrl || CARD_IMAGES[index % CARD_IMAGES.length];
+  const emoji = CATEGORY_EMOJI[quest.category || ''] || '✨';
 
   function handleDragEnd(_: any, info: PanInfo) {
     if (info.offset.x > 100) {
@@ -56,7 +80,7 @@ function SwipeCard({
       onDragEnd={handleDragEnd}
     >
       <div className="w-full h-full bg-gray-800 rounded-3xl shadow-2xl border border-gray-700 overflow-hidden flex flex-col select-none relative">
-        {/* Swipe overlay indicators */}
+        {/* Swipe overlays */}
         <motion.div
           className="absolute inset-0 bg-green-500/10 border-4 border-green-500 rounded-3xl z-20 flex items-center justify-center pointer-events-none"
           style={{ opacity: acceptOpacity }}
@@ -74,25 +98,32 @@ function SwipeCard({
           </span>
         </motion.div>
 
-        {/* Image Placeholder */}
-        <div className="h-48 bg-gradient-to-br from-[#34D1BF]/20 to-[#0A1628]/80 w-full flex items-center justify-center">
-          <MapPin size={48} className="text-[#34D1BF] opacity-50" />
+        {/* Image */}
+        <div className="h-44 w-full relative overflow-hidden">
+          <img src={imageUrl} alt={quest.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-800 via-transparent to-transparent" />
+          <span className="absolute top-3 left-3 bg-gray-900/70 backdrop-blur-sm text-white text-xs font-semibold px-3 py-1.5 rounded-full">
+            {emoji} {quest.category || 'quest'}
+          </span>
+          <span className="absolute top-3 right-3 bg-[#34D1BF]/90 text-[#0A1628] text-xs font-bold px-3 py-1.5 rounded-full">
+            {quest.reward}
+          </span>
         </div>
 
-        {/* Card Content */}
-        <div className="p-6 flex flex-col flex-1">
-          <h2 className="text-2xl font-bold text-white mb-2">{quest.title}</h2>
-          <p className="text-sm text-gray-400 mb-6 line-clamp-3 leading-relaxed flex-1">
+        {/* Content */}
+        <div className="p-5 flex flex-col flex-1">
+          <h2 className="text-xl font-bold text-white mb-1.5">{quest.title}</h2>
+          <p className="text-sm text-gray-400 mb-4 line-clamp-3 leading-relaxed flex-1">
             {quest.description}
           </p>
 
-          <div className="flex justify-between items-center text-sm font-medium border-t border-gray-700 pt-4">
-            <div className="flex items-center text-gray-300 bg-gray-900 rounded-full px-3 py-1">
-              <MapPin size={14} className="mr-1 text-[#34D1BF]" />
-              {quest.distance}
+          <div className="flex justify-between items-center text-xs font-medium border-t border-gray-700 pt-3">
+            <div className="flex items-center text-gray-300 bg-gray-900/80 rounded-full px-3 py-1.5">
+              <MapPin size={12} className="mr-1 text-[#34D1BF]" />
+              <span className="truncate max-w-[120px]">{quest.distance}</span>
             </div>
-            <div className="flex items-center text-gray-300 bg-gray-900 rounded-full px-3 py-1">
-              <Clock size={14} className="mr-1 text-[#34D1BF]" />
+            <div className="flex items-center text-gray-300 bg-gray-900/80 rounded-full px-3 py-1.5">
+              <Clock size={12} className="mr-1 text-[#34D1BF]" />
               {quest.time}
             </div>
           </div>
@@ -112,7 +143,7 @@ export default function QuestCardGallery({ initialQuests }: QuestCardGalleryProp
 
   if (quests.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 h-96 border-2 border-dashed border-gray-700 rounded-3xl bg-gray-900 shadow-xl w-full max-w-sm mx-auto">
+      <div className="flex flex-col items-center justify-center p-8 h-96 border-2 border-dashed border-gray-700 rounded-3xl bg-gray-900/50 shadow-xl w-full max-w-sm mx-auto">
         <h3 className="text-xl font-bold text-white mb-2">You&apos;re all caught up!</h3>
         <p className="text-gray-400 text-center">Check back later for new quests in your area.</p>
       </div>
@@ -126,22 +157,22 @@ export default function QuestCardGallery({ initialQuests }: QuestCardGalleryProp
           <SwipeCard
             key={quest.id}
             quest={quest}
+            index={index}
             isTop={index === quests.length - 1}
             onSwipe={(dir) => handleSwipe(quest.id, dir)}
           />
         ))}
       </div>
 
-      {/* Manual Swipe Buttons */}
       <div className="flex items-center justify-center space-x-8 mt-8">
         <button
-          onClick={() => handleSwipe(quests[quests.length - 1]?.id, 'left')}
+          onClick={() => quests.length > 0 && handleSwipe(quests[quests.length - 1].id, 'left')}
           className="w-16 h-16 bg-gray-800 border border-gray-700 rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors shadow-lg"
         >
           <X size={32} />
         </button>
         <button
-          onClick={() => handleSwipe(quests[quests.length - 1]?.id, 'right')}
+          onClick={() => quests.length > 0 && handleSwipe(quests[quests.length - 1].id, 'right')}
           className="w-16 h-16 bg-[#34D1BF]/20 border border-[#34D1BF]/50 rounded-full flex items-center justify-center text-[#34D1BF] hover:bg-[#34D1BF] hover:text-[#0A1628] transition-colors shadow-lg"
         >
           <Check size={32} />
