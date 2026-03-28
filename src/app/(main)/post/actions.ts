@@ -7,9 +7,7 @@ export async function createQuest(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  if (!user) redirect('/login')
 
   const title = formData.get('title') as string
   const description = formData.get('description') as string
@@ -19,7 +17,29 @@ export async function createQuest(formData: FormData) {
   const locationName = formData.get('locationName') as string
   const rewardType = formData.get('rewardType') as string || 'points'
   const price = parseFloat(formData.get('price') as string) || 0
-  const photoUrl = formData.get('photoUrl') as string || null
+
+  // Validate lat/lng
+  if (isNaN(lat) || isNaN(lng)) {
+    redirect('/post?message=' + encodeURIComponent('Please select a valid location from the suggestions.'))
+  }
+
+  // Upload photo to Supabase Storage if provided
+  let photoUrl: string | null = null
+  const photoFile = formData.get('photo') as File | null
+  if (photoFile && photoFile.size > 0) {
+    const ext = photoFile.name.split('.').pop() || 'jpg'
+    const path = `${user.id}/${Date.now()}.${ext}`
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('quest-photos')
+      .upload(path, photoFile, { upsert: true })
+
+    if (!uploadError && uploadData) {
+      const { data: { publicUrl } } = supabase.storage
+        .from('quest-photos')
+        .getPublicUrl(uploadData.path)
+      photoUrl = publicUrl
+    }
+  }
 
   const { error } = await supabase.from('quests').insert({
     created_by: user.id,
@@ -40,5 +60,27 @@ export async function createQuest(formData: FormData) {
     redirect('/post?message=' + encodeURIComponent(error.message))
   }
 
-  redirect('/browse?message=Quest posted successfully!')
+  redirect('/browse')
+}
+
+export async function acceptQuest(questId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('quests')
+    .update({ status: 'active', adventurer_id: user.id })
+    .eq('id', questId)
+    .eq('status', 'open') // Only can accept open quests
+
+  if (error) {
+    console.error('Accept quest error:', error)
+  }
+  // Also record the interaction
+  await supabase.from('quest_interactions').insert({
+    quest_id: questId,
+    adventurer_id: user.id,
+    status: 'pending_approval',
+  })
 }

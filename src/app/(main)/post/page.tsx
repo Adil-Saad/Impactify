@@ -85,7 +85,7 @@ export default function PostPage() {
         </h2>
         <p className="text-[#34D1BF] font-medium text-sm mb-6">Help your community, one quest at a time</p>
 
-        <form action={createQuest} className="flex flex-col gap-5 text-white">
+        <form action={createQuest} encType="multipart/form-data" className="flex flex-col gap-5 text-white">
 
           {/* Photo Upload */}
           <div className="relative">
@@ -101,7 +101,7 @@ export default function PostPage() {
                 )}
               </div>
             </label>
-            <input id="photo-upload" type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
+            <input id="photo-upload" name="photo" type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoChange} />
           </div>
 
           {/* Title */}
@@ -214,7 +214,6 @@ export default function PostPage() {
               />
             )}
             <input type="hidden" name="rewardType" value={rewardType} />
-            <input type="hidden" name="photoUrl" value="" />
           </div>
 
           {/* Submit */}

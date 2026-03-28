@@ -4,15 +4,15 @@ services:
       context: .
       dockerfile: dockerfile
       args:
-        # Browser uses the proxy rewrite through Next.js — works behind Cloudflare tunnel
-        NEXT_PUBLIC_SUPABASE_URL: "https://gokind.flatsync.app/supabase"
+        # Browser connects directly to Supabase Kong on the host-exposed port
+        NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321"
         NEXT_PUBLIC_SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
     ports:
       - "43000:3000"
     environment:
       # Server-side reaches Supabase Kong directly on the Docker network
       SUPABASE_URL: "http://supabase_kong_gokind:8000"
-      NEXT_PUBLIC_SUPABASE_URL: "https://gokind.flatsync.app/supabase"
+      NEXT_PUBLIC_SUPABASE_URL: "http://localhost:54321"
       NEXT_PUBLIC_SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
       SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
     networks:
