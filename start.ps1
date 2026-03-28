@@ -39,10 +39,10 @@ docker compose up --build -d
 Write-Host ""
 Write-Host "  ✅ GoKind is LIVE!" -ForegroundColor Green
 Write-Host ""
-Write-Host "  🌐 Web App:        http://localhost:3000" -ForegroundColor White
+Write-Host "  🌐 Web App:        http://localhost:43000" -ForegroundColor White
 Write-Host "  🔧 Supabase Studio: http://localhost:54323" -ForegroundColor White
 Write-Host "  📧 Mailpit:         http://localhost:54324" -ForegroundColor White
 Write-Host ""
 Write-Host "  To expose via Cloudflare Tunnel:" -ForegroundColor DarkGray
-Write-Host "    cloudflared tunnel --url http://localhost:3000" -ForegroundColor DarkGray
+Write-Host "    cloudflared tunnel --url http://localhost:43000" -ForegroundColor DarkGray
 Write-Host ""
