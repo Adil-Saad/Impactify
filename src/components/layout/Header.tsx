@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Bell, X, MapPin } from 'lucide-react';
+import { Bell, X } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -27,44 +27,56 @@ export default function Header() {
   if (pathname === '/profile') title = 'Profile';
   if (pathname === '/home') title = 'GoKind 🍃';
 
-  // Listen for new quests via Supabase realtime
-  useEffect(() => {
+  const fetchNotifications = async () => {
     const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Fetch user_notifications JOINED with notifications
+    const { data, error } = await supabase
+      .from('user_notifications')
+      .select(`
+        read,
+        notifications ( id, message, type, created_at )
+      `)
+      .eq('user_id', user.id)
+      // Supabase JS doesn't support order on joined tables well without a view, so we'll sort in JS
+      .limit(30);
+
+    if (error) {
+      console.error('Fetch notifs error:', error);
+      return;
+    }
+
+    if (data) {
+      const formatted: Notification[] = data.map((d: any) => ({
+        id: d.notifications?.id || Math.random().toString(),
+        message: d.notifications?.message || '',
+        time: new Date(d.notifications?.created_at || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: d.read,
+        type: d.notifications?.type as 'new_quest' | 'accepted' | 'completed',
+        _created_at: new Date(d.notifications?.created_at || Date.now()).getTime(),
+      })).sort((a, b) => b._created_at - a._created_at);
+
+      setNotifications(formatted);
+      setUnreadCount(formatted.filter(n => !n.read).length);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+
+    const supabase = createClient();
+    // Subscribe to new user_notifications
     const channel = supabase
-      .channel('notifications')
+      .channel('user_notifs_channel')
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
-        table: 'quests',
-      }, (payload) => {
-        const quest = payload.new as { title: string; category: string; id: string };
-        const newNotification: Notification = {
-          id: quest.id,
-          message: `New quest posted: "${quest.title}"`,
-          time: 'Just now',
-          read: false,
-          type: 'new_quest',
-        };
-        setNotifications(prev => [newNotification, ...prev].slice(0, 20));
-        setUnreadCount(c => c + 1);
-      })
-      .on('postgres_changes', {
-        event: 'UPDATE',
-        schema: 'public',
-        table: 'quests',
-      }, (payload) => {
-        const quest = payload.new as { title: string; status: string; id: string };
-        if (quest.status === 'active') {
-          const notification: Notification = {
-            id: `${quest.id}-accepted`,
-            message: `Quest accepted: "${quest.title}"`,
-            time: 'Just now',
-            read: false,
-            type: 'accepted',
-          };
-          setNotifications(prev => [notification, ...prev].slice(0, 20));
-          setUnreadCount(c => c + 1);
-        }
+        table: 'user_notifications',
+      }, () => {
+        // Just refetch when a new notification drops
+        fetchNotifications();
       })
       .subscribe();
 
@@ -82,9 +94,23 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showNotifications]);
 
-  const markAllRead = () => {
+  const markAllRead = async () => {
+    if (unreadCount === 0) return;
+
+    // Optimistic UI update
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     setUnreadCount(0);
+
+    // Update DB
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase
+        .from('user_notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+    }
   };
 
   return (

@@ -37,7 +37,9 @@ export async function createQuest(formData: FormData) {
       const { data: { publicUrl } } = supabase.storage
         .from('quest-photos')
         .getPublicUrl(uploadData.path)
-      photoUrl = publicUrl
+      
+      // Store as a relative proxy URL so the browser loads it correctly from any domain
+      photoUrl = publicUrl.replace(process.env.SUPABASE_URL || 'http://localhost:54321', '/supabase')
     }
   }
 

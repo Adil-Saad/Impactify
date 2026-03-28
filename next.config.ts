@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "127.0.0.1" },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/supabase/:path*',
+        destination: 'http://supabase_kong_gokind:8000/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
