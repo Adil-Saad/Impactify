@@ -200,7 +200,7 @@ export default function PostPage() {
               </button>
               <button type="button" onClick={() => setRewardType('money')}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-all ${rewardType === 'money' ? 'bg-[#34D1BF]/20 text-[#34D1BF] border-[#34D1BF]' : 'bg-gray-800 text-gray-400 border-gray-700'}`}>
-                💷 Tip / Payment
+                Tip / Payment
               </button>
             </div>
             {rewardType === 'money' && (
@@ -222,7 +222,7 @@ export default function PostPage() {
             disabled={!category || !selectedLocation}
             className="w-full mt-2 bg-gradient-to-r from-[#34D1BF] to-[#2bb4a4] text-[#0A1628] rounded-xl px-4 py-4 font-bold text-lg hover:shadow-lg hover:shadow-[#34D1BF]/20 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Post Quest 🚀
+            Post Quest 
           </button>
         </form>
       </div>
